@@ -78,6 +78,15 @@ Example document:
   ],
   "totalAmount": 40.0,
   "status": "pending",
+  "userId": "user_id",
+  "email": "some@email.com",
+  "shippingAddress": {
+    "fullName": "name some",
+    "street": "Some Street",
+    "city": "Belgrade",
+    "postalCode": "11000",
+    "country": "Serbia"
+  },
   "paymentProvider": "paypal",
   "paymentStatus": "created",
   "paypalOrderId": null,
