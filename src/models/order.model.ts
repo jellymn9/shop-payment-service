@@ -9,9 +9,21 @@ export interface OrderItem {
   quantity: number;
 }
 
+export interface OrderAddress {
+  fullName: string;
+  street: string;
+  city: string;
+  postalCode: string;
+  country: string;
+  phone: string;
+}
+
 export interface Order {
   id: string;
+  userId: string;
+  email: string;
   items: OrderItem[];
+  address: OrderAddress;
   totalAmount: number;
   status: OrderStatus;
   paypalOrderId: string | null;
@@ -19,4 +31,4 @@ export interface Order {
   paidAt: Timestamp | null;
 }
 
-export type CreateOrderDto = Pick<Order, 'items'>;
+export type CreateOrderDto = Pick<Order, 'items' | 'address'>;
