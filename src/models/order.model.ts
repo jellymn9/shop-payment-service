@@ -1,6 +1,6 @@
-import { Timestamp } from 'firebase-admin/firestore';
+import { Timestamp } from "firebase-admin/firestore";
 
-export type OrderStatus = 'pending' | 'paid' | 'failed';
+export type OrderStatus = "pending" | "paid" | "failed";
 
 export interface OrderItem {
   productId: string;
@@ -31,4 +31,4 @@ export interface Order {
   paidAt: Timestamp | null;
 }
 
-export type CreateOrderDto = Pick<Order, 'items' | 'address'>;
+export type CreateOrderDto = Pick<Order, "items" | "address">;
