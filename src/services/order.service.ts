@@ -42,3 +42,10 @@ export const markOrderPaid = async (
 export const markOrderFailed = async (id: string): Promise<void> => {
   await updateOrder(id, { status: "failed" });
 };
+
+export const linkPayPalOrder = async (
+  orderId: string,
+  paypalOrderId: string
+): Promise<void> => {
+  await updateOrder(orderId, { paypalOrderId });
+};
