@@ -4,6 +4,7 @@ export const env = {
   paypal: {
     clientId: process.env.PAYPAL_CLIENT_ID!,
     secret: process.env.PAYPAL_SECRET!,
+    webhookId: process.env.PAYPAL_WEBHOOK_ID!,
     baseUrl:
       process.env.PAYPAL_ENV === "production"
         ? "https://api-m.paypal.com"

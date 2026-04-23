@@ -9,6 +9,10 @@ interface PayPalOrderResponse {
   status: string;
 }
 
+interface WebhookVerificationResponse {
+  verification_status: "SUCCESS" | "FAILURE";
+}
+
 const getAccessToken = async (): Promise<string> => {
   const credentials = Buffer.from(
     `${env.paypal.clientId}:${env.paypal.secret}`
@@ -89,4 +93,40 @@ export const capturePayment = async (paypalOrderId: string): Promise<void> => {
   if (data.status !== "COMPLETED") {
     throw new Error(`PayPal capture did not complete. Status: ${data.status}`);
   }
+};
+
+export const verifyWebhookSignature = async (
+  headers: Record<string, string | string[] | undefined>,
+  rawBody: Buffer
+): Promise<boolean> => {
+  const accessToken = await getAccessToken();
+
+  const response = await fetch(
+    `${env.paypal.baseUrl}/v1/notifications/verify-webhook-signature`,
+    {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        transmission_id: headers["paypal-transmission-id"],
+        transmission_time: headers["paypal-transmission-time"],
+        cert_url: headers["paypal-cert-url"],
+        auth_algo: headers["paypal-auth-algo"],
+        transmission_sig: headers["paypal-transmission-sig"],
+        webhook_id: env.paypal.webhookId,
+        webhook_event: JSON.parse(rawBody.toString("utf8")),
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      `PayPal webhook verification failed: ${response.status} ${response.statusText}`
+    );
+  }
+
+  const data = (await response.json()) as WebhookVerificationResponse;
+  return data.verification_status === "SUCCESS";
 };
