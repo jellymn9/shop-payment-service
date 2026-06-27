@@ -37,7 +37,7 @@ describe("createPayPalOrder", () => {
 
     const body = JSON.parse(mockFetch.mock.calls[1][1].body);
     expect(body.purchase_units[0].amount.value).toBe("39.90");
-    expect(body.purchase_units[0].amount.currency_code).toBe("EUR");
+    expect(body.purchase_units[0].amount.currency_code).toBe("USD");
   });
 
   it("embeds the internal orderId as custom_id", async () => {
@@ -62,7 +62,7 @@ describe("createPayPalOrder", () => {
     });
 
     await expect(createPayPalOrder("order-1", 10)).rejects.toThrow(
-      "PayPal create order failed: 401 Unauthorized"
+      "PayPal create order failed: 401 Unauthorized",
     );
   });
 });
@@ -88,7 +88,7 @@ describe("capturePayment", () => {
     });
 
     await expect(capturePayment("PAYPAL-123")).rejects.toThrow(
-      "PayPal capture did not complete. Status: VOIDED"
+      "PayPal capture did not complete. Status: VOIDED",
     );
   });
 
@@ -101,7 +101,7 @@ describe("capturePayment", () => {
     });
 
     await expect(capturePayment("PAYPAL-123")).rejects.toThrow(
-      "PayPal capture failed: 422 Unprocessable Entity"
+      "PayPal capture failed: 422 Unprocessable Entity",
     );
   });
 });

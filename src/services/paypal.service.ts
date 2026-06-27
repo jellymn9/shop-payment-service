@@ -15,20 +15,22 @@ interface WebhookVerificationResponse {
 
 const getAccessToken = async (): Promise<string> => {
   const credentials = Buffer.from(
-    `${env.paypal.clientId}:${env.paypal.secret}`
+    `${env.paypal.clientId}:${env.paypal.secret}`,
   ).toString("base64");
 
   const response = await fetch(`${env.paypal.baseUrl}/v1/oauth2/token`, {
     method: "POST",
     headers: {
-      "Authorization": `Basic ${credentials}`,
+      Authorization: `Basic ${credentials}`,
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body: "grant_type=client_credentials",
   });
 
   if (!response.ok) {
-    throw new Error(`PayPal auth failed: ${response.status} ${response.statusText}`);
+    throw new Error(
+      `PayPal auth failed: ${response.status} ${response.statusText}`,
+    );
   }
 
   const data = (await response.json()) as PayPalTokenResponse;
@@ -37,14 +39,14 @@ const getAccessToken = async (): Promise<string> => {
 
 export const createPayPalOrder = async (
   orderId: string,
-  amount: number
+  amount: number,
 ): Promise<string> => {
   const accessToken = await getAccessToken();
 
   const response = await fetch(`${env.paypal.baseUrl}/v2/checkout/orders`, {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${accessToken}`,
+      Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
@@ -53,7 +55,7 @@ export const createPayPalOrder = async (
         {
           custom_id: orderId,
           amount: {
-            currency_code: "EUR",
+            currency_code: "USD",
             value: amount.toFixed(2),
           },
         },
@@ -62,7 +64,9 @@ export const createPayPalOrder = async (
   });
 
   if (!response.ok) {
-    throw new Error(`PayPal create order failed: ${response.status} ${response.statusText}`);
+    throw new Error(
+      `PayPal create order failed: ${response.status} ${response.statusText}`,
+    );
   }
 
   const data = (await response.json()) as PayPalOrderResponse;
@@ -77,15 +81,17 @@ export const capturePayment = async (paypalOrderId: string): Promise<void> => {
     {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({}),
-    }
+    },
   );
 
   if (!response.ok) {
-    throw new Error(`PayPal capture failed: ${response.status} ${response.statusText}`);
+    throw new Error(
+      `PayPal capture failed: ${response.status} ${response.statusText}`,
+    );
   }
 
   const data = (await response.json()) as PayPalOrderResponse;
@@ -97,7 +103,7 @@ export const capturePayment = async (paypalOrderId: string): Promise<void> => {
 
 export const verifyWebhookSignature = async (
   headers: Record<string, string | string[] | undefined>,
-  rawBody: Buffer
+  rawBody: Buffer,
 ): Promise<boolean> => {
   const accessToken = await getAccessToken();
 
@@ -106,7 +112,7 @@ export const verifyWebhookSignature = async (
     {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -118,12 +124,12 @@ export const verifyWebhookSignature = async (
         webhook_id: env.paypal.webhookId,
         webhook_event: JSON.parse(rawBody.toString("utf8")),
       }),
-    }
+    },
   );
 
   if (!response.ok) {
     throw new Error(
-      `PayPal webhook verification failed: ${response.status} ${response.statusText}`
+      `PayPal webhook verification failed: ${response.status} ${response.statusText}`,
     );
   }
 
